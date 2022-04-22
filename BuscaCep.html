@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>Buscador de Cep</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        h3 {
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            color: #00416b;
+        }
+
+        p {
+            display: block;
+            color: darkgray;
+            font-weight: bold;
+            font-size: 0.8rem;
+            /* display: none; */
+        }
+
+        .media {
+            border-style: groove;
+            border-radius: 10px;
+            box-shadow: 0px 0px 3px black;
+        }
+
+        @media screen and (min-width:429px) {
+
+            p,
+            h6 {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width:430px) {
+            table {
+                display: none;
+            }
+
+            p,
+            .media {
+                visibility: visible;
+            }
+        }
+
+        @media screen and (max-width: 430px) {
+            .coluna {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .grid_container {
+            grid-template-columns: 1fr;
+            background-color: #ffd400;
+        }
+
+        .item {
+            width: 100px;
+            height: 56px;
+        }
+
+        a {
+            text-decoration: none;
+            background-color: #00416b;
+            padding: 7px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="grid_container">
+        <div class="item">
+            <img class="img-fluid" src="https://www.blogdovestibular.com/wp-content/uploads/2020/06/correios.jpg"
+                alt="correios" />
+        </div>
+    </div>
+    <br>
+    <main>
+
+        <div class="container">
+            <div class="row ">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md ">
+                    <h3>Busca cep</h3>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-5 coluna">
+                    Digite um Cep
+                    <input type="number" class="form-control my-2" id="valorCep" required pattern="\d{8}" min="0" />
+                    <input type="text" class="form-control" readonly="readonly" id="endereco" /><br>
+                    <small id="copiado"></small>
+                    <br>
+                    <br>
+                    <button type="button" class="btn my-2 chamar" style="background-color: #1a73e8;">Buscar</button>
+                    <button type="button" class="btn btn-info" onclick="botao()">Copiar logradouro</button>
+
+                    <a href="https://www.google.com.br/maps" rel="noreferrer noopener" target="_blank"
+                        class="btn btn-danger my-2">Mapa</a>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+
+        <table class="table table-bordered">
+            <thead style="background-color: #0071ad; color: white;">
+                <tr>
+                    <th scope="col">Cep</th>
+                    <th scope="col">Logradouro</th>
+                    <!-- <th scope="col">Complemento</th> -->
+                    <th scope="col">Bairro</th>
+                    <th scope="col">Localidade</th>
+                    <th scope="col">UF</th>
+                    <th scope="col">DDD</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="cep"></td>
+                    <td id="logradouro"></td>
+                    <!-- <td id="complemento"></td> -->
+                    <td id="bairro"></td>
+                    <td id="localidade"></td>
+                    <td id="uf"></td>
+                    <td id="ddd"></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <!-- media queries -->
+        <div class="container media">
+            <div class="row">
+                <div class="col-md">
+                    <p class="py-0 my-0">Cep</p>
+                    <h6 id="CEP"></h6>
+                    <p class="py-0 my-0">Logradouro</p>
+                    <h6 id="LOGRADOURO"></h6>
+                    <p class="py-0 my-0">Bairro</p>
+                    <h6 id="BAIRRO"></h6>
+                    <p class="py-0 my-0">Localidade</p>
+                    <h6 id="LOCALIDADE"></h6>
+                    <p class="py-0 my-0">Uf</p>
+                    <h6 id="UF"></h6>
+                    <p class="py-0 my-0">ddd</p>
+                    <h6 id="DDD"></h6>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- fim -->
+    <script>
+
+        $(function () {
+            $('.chamar').click(function () {
+                var valorCep = document.getElementById('valorCep').value;
+                $.ajax({
+                    url: 'https://viacep.com.br/ws/' + valorCep + '/json/',
+                    success: function (data) {
+
+                        $('#cep').text(data.cep);
+                        $('#logradouro').text(data.logradouro);
+                        $('#complemento').text(data.complemento);
+                        $('#bairro').text(data.bairro);
+                        $('#localidade').text(data.localidade);
+                        $('#uf').text(data.uf);
+                        $('#ddd').text(data.ddd);
+                        document.getElementById('valorCep').value = "";
+                        $('#aviso').empty();
+
+                        // media queries
+                        $('#CEP').text(data.cep);
+                        $('#LOGRADOURO').text(data.logradouro);
+                        $('#complemento').text(data.complemento);
+                        $('#BAIRRO').text(data.bairro);
+                        $('#LOCALIDADE').text(data.localidade);
+                        $('#UF').text(data.uf);
+                        $('#DDD').text(data.ddd);
+                        document.getElementById('valorCep').value = "";
+                        $('#aviso').empty();
+
+                        var endereco = document.getElementById("endereco").value = data.logradouro;
+
+
+                        // media queries fim
+                    },
+                    error: function () {
+                        alert("Insira um cep válido sem traço. \n Um cep Contém 8 Números ");
+
+                    },
+                });
+
+            });
+
+        });
+
+
+        $(function () {
+            $("#valorCep").keyup(function () {
+                if ($('#valorCep').val() == "") {
+                    $('#aviso').text('Digitar cep');
+                    $('#aviso').css('color', 'red').show();
+                    $('#valorCep').css('borderColor', 'red');
+
+                }
+            });
+        });
+        $(function () {
+            $("#valorCep").keyup(function () {
+                if ($('#valorCep').val() != "") {
+                    $('#aviso').text('OK');
+                    $('#aviso').css('color', 'green').show();
+                    $('#valorCep').css('borderColor', 'green');
+
+                }
+            });
+        });
+        $(function () {
+            $("#dado").submit(function () {
+                return false;
+
+
+            });
+        });
+
+        function botao() {
+
+            let valor = document.querySelector('#endereco');
+            valor.select();
+
+            copia = document.execCommand('copy');
+
+            if (copia) {
+                document.getElementById("copiado").innerHTML = "<span style='color: green'>Copiado com sucesso.</span>";
+            } else {
+                document.getElementById("copiado").innerHTML = "<span style='color: red'>Problema ao copiar</span>";
+
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
