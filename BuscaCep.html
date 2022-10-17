@@ -178,7 +178,7 @@
             $('.chamar').click(function () {
                 var valorCep = document.getElementById('valorCep').value;
                 $.ajax({
-                    url: 'https://viacep.com.br/ws/' + valorCep + '/json/',
+                    url: '//viacep.com.br/ws/' + valorCep + '/json/',
                     success: function (data) {
 
                         $('#cep').text(data.cep);
